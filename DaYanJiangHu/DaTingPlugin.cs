@@ -31,6 +31,11 @@ namespace DaYanJiangHu
         private static int x_resolution = 1920;
         private static int y_resolution = 1080;
 
+        private static List<Item> items = new List<Item>();
+        private static List<string> item_names = new List<string>();
+        private static string default_item = "";
+        private static ConfigEntry<string> config_item;
+
         private string default_sex = "女";
         private bool supper_roles_flag = true;
 
@@ -44,8 +49,8 @@ namespace DaYanJiangHu
             Harmony.CreateAndPatchAll(typeof(Plugin));
             // 允许用户自定义启动快捷键
             ShowCounter = Config.AddSetting("打开窗口快捷键", "Key", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F9));
+            //save_items_to_local();
             Logger.LogDebug("测试MOD");
-
         }
 
         void Update()
@@ -54,6 +59,7 @@ namespace DaYanJiangHu
             //modify_dating_people();
             //modify_warehouse_capacity();
             //modify_money();
+
 
             // 监听脚本按键按下
             if (ShowCounter.Value.IsDown())
@@ -81,7 +87,6 @@ namespace DaYanJiangHu
                 // 注意：第一个参数(20210218)为窗口ID，ID尽量设置的与众不同，若与其他Mod的窗口ID相同，将会导致窗口冲突
                 windowRect = GUI.Window(20210530, windowRect, DoMyWindow, "辣鸡游戏MOD");
             }
-            //add_item();
         }
 
         public void DoMyWindow(int winId)
@@ -120,21 +125,54 @@ namespace DaYanJiangHu
                 if (GUILayout.Button("培养下月完成"))
                 {
                 }
-                //闭关无需等待
                 GUILayout.EndHorizontal();
 
-                //体力消耗开关
                 GUILayout.BeginHorizontal();
+                //闭关无需等待
                 no_need_wait_biguan();
+                //体力消耗开关
                 no_consume_strength();
                 GUILayout.EndHorizontal();
                 GUILayout.BeginHorizontal();
-                add_roles(default_sex);
+                //添加弟子
+                add_roles_button(default_sex);
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+                //添加物品到背包
+                //save_items_to_local();
+                if (items == null || items.Count == 0)
+                {
+                    add_item();
+                }
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
             //定义窗体可以活动的范围
             GUI.DragWindow(new Rect(0, 0, UnityEngine.Screen.width, UnityEngine.Screen.height));
+        }
+
+        private void save_items_to_local()
+        {
+            items = ItemsManager.instance.getitemList();
+            if (items != null)
+            {
+                foreach (Item item in items)
+                {
+                    Debug.LogFormat("物品ID: {0}, 物品名称: {1}, 物品等级: {2}", item.ID, item.Name, item.quality);
+                    item_names.Add(item.Name);
+                    //OpenUi._instance.Warehouse.GetComponent<Inventory>().StoreItem(item);
+                }
+                update_item_config(item_names);
+            }
+        }
+
+        private void update_item_config(List<string> item_names)
+        {
+            if (item_names.Count == 0)
+            {
+                item_names.Add("");
+            }
+            config_item = Config.AddSetting("物品选择", "物品名称", default_item, new ConfigDescription("物品选择1", null, new AcceptableValueList<string>(item_names.ToArray())));
         }
 
         public void save_game()
@@ -264,63 +302,93 @@ namespace DaYanJiangHu
         }
 
         //添加弟子
-        public void add_roles(string sex)
+        public void add_roles_button(string sex)
         {
             if (GUILayout.Button("喜提妹子"))
             {
-                Roles roles = RoleManager.instance.GetRoles(OpenUi._instance.Gamedatas.PlayerFaction, OpenUi._instance.Gamedatas.res_fame, 1);
-                if (roles != null && sex != null)
-                {
-                    if (sex == null || roles.Sex.Equals(sex))
-                    {
-                        if (supper_roles_flag)
-                        {
-                            //力量
-                            roles.Potential_Power = Roles.Potential.无双;
-                            //内力
-                            roles.Potential_Inter = Roles.Potential.无双;
-                            //体魄
-                            roles.Potential_Body = Roles.Potential.无双;
-                            //洞察
-                            roles.Potential_Insight = Roles.Potential.无双;
-                            //灵敏
-                            roles.Potential_Agile = Roles.Potential.无双;
-                            //韧性
-                            roles.Potential_Toughness = Roles.Potential.无双;
-                            //悟性
-                            roles.Potential_Under = Roles.Potential.无双;
-                            //刀
-                            roles.Potential_knife = Roles.Potential.无双;
-                            //剑
-                            roles.Potential_Sword = Roles.Potential.无双;
-                        }
-                        OpenUi._instance.Gamedatas.Roles_player.Add(roles);
-                    }
-                    else
-                    {
-                        add_roles(sex);
-                    }
-                }
+                add_roles(sex);
             }
             if (GUILayout.Button("天降猛男"))
             {
-
+                add_roles(sex);
             }
-            if (GUILayout.Button("虚空取物"))
+            if (GUILayout.Button("雷劫洗礼"))
             {
-
+                if (this.supper_roles_flag)
+                {
+                    this.supper_roles_flag = false;
+                }
+                else
+                {
+                    this.supper_roles_flag = true;
+                }
             }
+            GUILayout.Label(this.supper_roles_flag ? "已开启" : "已关闭");
+            //if (GUILayout.Button("虚空取物"))
+            //{
 
+            //}
+
+        }
+
+        public void add_roles(string sex)
+        {
+            Roles roles = RoleManager.instance.GetRoles(OpenUi._instance.Gamedatas.PlayerFaction, OpenUi._instance.Gamedatas.res_fame, 1);
+            if (roles != null && sex != null)
+            {
+                Debug.LogFormat("性别: {0}", roles.Sex);
+                if (sex == null || roles.Sex.Equals(sex))
+                {
+                    if (supper_roles_flag)
+                    {
+                        //力量
+                        roles.Potential_Power = Roles.Potential.无双;
+                        //内力
+                        roles.Potential_Inter = Roles.Potential.无双;
+                        //体魄
+                        roles.Potential_Body = Roles.Potential.无双;
+                        //洞察
+                        roles.Potential_Insight = Roles.Potential.无双;
+                        //灵敏
+                        roles.Potential_Agile = Roles.Potential.无双;
+                        //韧性
+                        roles.Potential_Toughness = Roles.Potential.无双;
+                        //悟性
+                        roles.Potential_Under = Roles.Potential.无双;
+                        //刀
+                        roles.Potential_knife = Roles.Potential.无双;
+                        //剑
+                        roles.Potential_Sword = Roles.Potential.无双;
+                    }
+                    OpenUi._instance.Gamedatas.Roles_player.Add(roles);
+                }
+                else
+                {
+                    add_roles(sex);
+                }
+            }
         }
 
         public void add_item()
         {
-            List<Item> items = ItemsManager.instance.getitemList();
-            foreach (Item item in items)
+
+            if (default_item == null || default_item != config_item.Value)
             {
-                Debug.LogFormat("物品ID: {0}, 物品名称: {1}, 物品等级: {2}", item.ID, item.Name, item.quality);
-                OpenUi._instance.Warehouse.GetComponent<Inventory>().StoreItem(item);
+                Debug.Log("下拉列表2发生了变化,新的值为：" + config_item.Value);
+                default_item = config_item.Value;
+                List<Item> selectedItem = new List<Item>();
+                foreach (Item item in items)
+                {
+                    if (item.Name.Equals(config_item.Value))
+                    {
+                        selectedItem.Add(item);
+                    }
+                }
+                int i = UnityEngine.Random.Range(0, selectedItem.Count);
+                OpenUi._instance.Warehouse.GetComponent<Inventory>().StoreItem(selectedItem[i]);
+
             }
+
         }
 
         //授业不消耗贡献，时间1天
@@ -442,13 +510,6 @@ namespace DaYanJiangHu
         //    __instance.Options.text = "武技";
         //    Traverse.Create(__instance).Method("ClearGongfa");
         //    return false;
-        //}
-
-        //[HarmonyPostfix]
-        //[HarmonyPatch(typeof(SettingGame), "MaxShow")]
-        //public static void SettingGame_MaxShow_Prefix(ref SettingGame __instance)
-        //{
-        //    Screen.SetResolution(1280, 768, false);
         //}
 
 
