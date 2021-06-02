@@ -3,3 +3,8 @@ D:\demo\c++\demo1\dyjh_mod\DaYanJiangHu\bin\Debug\DaYanJiangHu.pdb
 D:\demo\c++\demo1\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.csproj.CoreCompileInputs.cache
 D:\demo\c++\demo1\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.dll
 D:\demo\c++\demo1\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.pdb
+F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\bin\Debug\DaYanJiangHu.dll
+F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\bin\Debug\DaYanJiangHu.pdb
+F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.csproj.CoreCompileInputs.cache
+F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.dll
+F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.pdb

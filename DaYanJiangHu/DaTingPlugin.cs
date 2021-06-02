@@ -4,7 +4,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
-using UnityEditor;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
@@ -35,6 +35,9 @@ namespace DaYanJiangHu
         private static List<string> item_names = new List<string>();
         private static string default_item = "";
         private static ConfigEntry<string> config_item;
+        private static List<Item> selectedItem = new List<Item>();
+        // 定义窗口位置 x y 宽 高
+        Rect windowRect = new Rect(500, 200, 500, 300);
 
         private string default_sex = "女";
         private bool supper_roles_flag = true;
@@ -50,7 +53,9 @@ namespace DaYanJiangHu
             // 允许用户自定义启动快捷键
             ShowCounter = Config.AddSetting("打开窗口快捷键", "Key", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F9));
             //save_items_to_local();
+            //update_item_config();
             Logger.LogDebug("测试MOD");
+            //add_item();
         }
 
         void Update()
@@ -81,8 +86,6 @@ namespace DaYanJiangHu
         {
             if (this.DisplayingWindow)
             {
-                // 定义窗口位置 x y 宽 高
-                Rect windowRect = new Rect(500, 200, 500, 300);
                 // 创建一个新窗口
                 // 注意：第一个参数(20210218)为窗口ID，ID尽量设置的与众不同，若与其他Mod的窗口ID相同，将会导致窗口冲突
                 windowRect = GUI.Window(20210530, windowRect, DoMyWindow, "辣鸡游戏MOD");
@@ -97,6 +100,7 @@ namespace DaYanJiangHu
             {
                 GUIStyle titleStyle = new GUIStyle();
                 titleStyle.fontSize = 24;
+                titleStyle.normal.textColor = new Color(25f / 256f, 159 / 256f, 197 / 256f);
                 GUILayout.Label("护肝神器！", titleStyle);
                 GUILayout.BeginHorizontal();
                 reset_resolution();
@@ -139,11 +143,8 @@ namespace DaYanJiangHu
                 GUILayout.EndHorizontal();
                 GUILayout.BeginHorizontal();
                 //添加物品到背包
-                //save_items_to_local();
-                if (items == null || items.Count == 0)
-                {
-                    add_item();
-                }
+                save_items_to_file();
+                add_item();
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
@@ -153,26 +154,86 @@ namespace DaYanJiangHu
 
         private void save_items_to_local()
         {
-            items = ItemsManager.instance.getitemList();
-            if (items != null)
+            if (GUILayout.Button("虚空取物"))
             {
-                foreach (Item item in items)
+                items = ItemsManager.instance.getitemList();
+                if (items != null)
                 {
-                    Debug.LogFormat("物品ID: {0}, 物品名称: {1}, 物品等级: {2}", item.ID, item.Name, item.quality);
-                    item_names.Add(item.Name);
-                    //OpenUi._instance.Warehouse.GetComponent<Inventory>().StoreItem(item);
+                    foreach (Item item in items)
+                    {
+                        Debug.LogFormat("物品ID: {0}, 物品名称: {1}, 物品等级: {2}", item.ID, item.Name, item.quality);
+                        item_names.Add(item.Name);
+                        //OpenUi._instance.Warehouse.GetComponent<Inventory>().StoreItem(item);
+                    }
+                    update_item_config();
                 }
-                update_item_config(item_names);
             }
         }
 
-        private void update_item_config(List<string> item_names)
+        public void add_item()
+        {
+            GUILayout.Label("物品名称", GUILayout.Width(80f));
+            default_item = GUILayout.TextField(default_item, GUILayout.Width(160));
+            if (GUILayout.Button("虚空取物", GUILayout.Width(80f)))
+            {
+                Debug.LogFormat("物品数量: {0}", items.Count);
+                if (items != null)
+                {
+                    foreach (Item item in items)
+                    {
+                        //Debug.LogFormat("物品ID: {0}, 物品名称: {1}, 物品等级: {2}", item.ID, item.Name, item.quality);
+                        Debug.LogFormat("遍历的物品: {0}, 默认物品: {1}", item.Name, default_item);
+                        if (item.Name.Equals(default_item))
+                        {
+                            selectedItem.Add(item);
+                        }
+                    }
+                    if(selectedItem.Count > 0)
+                    {
+                        int i = UnityEngine.Random.Range(0, selectedItem.Count);
+                        OpenUi._instance.Warehouse.GetComponent<Inventory>().StoreItem(selectedItem[i]);
+                        OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind(selectedItem[i].Name + "已通过虚空取物进入到您的仓库");
+                    } else
+                    {
+                        OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("无此物品，请进入游戏安装目录下的info.txt文件查找所需物品");
+                    }
+                }
+            }
+        }
+
+        public void save_items_to_file()
+        {
+            string infoPath = "info.txt";
+            items = ItemsManager.instance.getitemList();
+            if (!File.Exists(infoPath))
+            {
+                FileStream fileStream = new FileStream(infoPath, FileMode.CreateNew);
+                StreamWriter streamWriter = new StreamWriter(fileStream, System.Text.Encoding.UTF8);
+                streamWriter.WriteLine("ID 名称 级别 类型 值 功能1 功能2 功能3");
+                if (items != null)
+                {
+                    foreach (Item item in items)
+                    {
+                        Debug.LogFormat("物品ID: {0}, 物品名称: {1}, 物品等级: {2}", item.ID, item.Name, item.quality);
+                        streamWriter.WriteLine(Convert.ToString(item.ID) + " " + item.Name + " " + item.quality + " " + item.itemType + " " + item.Value + " " + item.Skills_0 + " " + item.Skills_1 + " " + item.Skills_2);
+                    }
+                }
+                streamWriter.Close(); //此处有坑。。。。要注意安全
+                fileStream.Close();
+            }
+        }
+
+        private void update_item_config()
         {
             if (item_names.Count == 0)
             {
                 item_names.Add("");
             }
-            config_item = Config.AddSetting("物品选择", "物品名称", default_item, new ConfigDescription("物品选择1", null, new AcceptableValueList<string>(item_names.ToArray())));
+            if (item_names.Count <= 1)
+            {
+                config_item = Config.AddSetting("物品选择", "物品名称", default_item, new ConfigDescription("物品选择1", null, new AcceptableValueList<string>(item_names.ToArray())));
+            }
+            
         }
 
         public void save_game()
@@ -184,26 +245,34 @@ namespace DaYanJiangHu
         {
             x_resolution = Convert.ToInt32(GUILayout.TextField(Regex.Replace(Convert.ToString(x_resolution), @"[^\d]", ""), GUILayout.Width(60f)));
             y_resolution = Convert.ToInt32(GUILayout.TextField(Regex.Replace(Convert.ToString(y_resolution), @"[^\d]", ""), GUILayout.Width(60f)));
-            if (GUILayout.Button("窗口"))
+            if (GUILayout.Button("设置", GUILayout.Width(60f)))
             {
                 x_resolution = x_resolution > 2560 ? 2560 : x_resolution;
                 x_resolution = x_resolution < 1024 ? 1024 : x_resolution;
                 y_resolution = y_resolution > 1440 ? 1440 : y_resolution;
                 y_resolution = y_resolution < 768 ? 768 : y_resolution;
-                UnityEngine.Screen.SetResolution(x_resolution, y_resolution, false);
+                UnityEngine.Screen.SetResolution(x_resolution, y_resolution, true);
             }
-            if (GUILayout.Button("全屏"))
-            {
-                Debug.LogFormat("width: {0}, height: {1}", UnityEngine.Screen.width, UnityEngine.Screen.height);
-                UnityEngine.Screen.SetResolution(y_resolution, y_resolution, true);
-            }
+            //if (GUILayout.Button("全屏"))
+            //{
+            //    Debug.LogFormat("width: {0}, height: {1}", UnityEngine.Screen.width, UnityEngine.Screen.height);
+            //    UnityEngine.Screen.SetResolution(y_resolution, y_resolution, true);
+            //}
         }
 
         public void role_max_up()
         {
             if (GUILayout.Button("人数升级"))
             {
+                //if (OpenUi._instance.Gamedatas.datingLev < 10)
+                //{
+                //    OpenUi._instance.Gamedatas.datingLev++;
+                //    OpenUi._instance.Gamedatas.PeopleLimit_dt += 8;
+                //    OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("弟子人数上限+8");
+                //}
+                OpenUi._instance.Gamedatas.datingLev++;
                 OpenUi._instance.Gamedatas.PeopleLimit_dt += 8;
+                OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("弟子人数上限+8");
             }
         }
 
@@ -214,7 +283,8 @@ namespace DaYanJiangHu
                 if (OpenUi._instance.Gamedatas.CangkuLev < 10)
                 {
                     OpenUi._instance.Gamedatas.CangkuLev++;
-                    OpenUi._instance.Gamedatas.CangkuLimit += 260;
+                    OpenUi._instance.Gamedatas.CangkuLimit += 60;
+                    OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("仓库等级+1");
                 }
             }
         }
@@ -224,6 +294,7 @@ namespace DaYanJiangHu
             if (GUILayout.Button("金钱+1000"))
             {
                 OpenUi._instance.Gamedatas.res_money += 1000;
+                OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("深受百姓爱戴，特赠礼: 金钱增加1000");
             }
         }
 
@@ -232,6 +303,7 @@ namespace DaYanJiangHu
             if (GUILayout.Button("粮食+1000"))
             {
                 OpenUi._instance.Gamedatas.res_food += 1000;
+                OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("深受百姓爱戴，特赠礼: 粮食增加1000");
             }
         }
 
@@ -242,6 +314,7 @@ namespace DaYanJiangHu
                 if (OpenUi._instance.Gamedatas.MasterRoles.Old > 20)
                 {
                     OpenUi._instance.Gamedatas.MasterRoles.Old -= 10;
+                    OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("穿越成功，您回到了10年前");
                 }
             }
         }
@@ -251,26 +324,9 @@ namespace DaYanJiangHu
             //连续闭关开关
             if (GUILayout.Button("闭关无需等待"))
             {
-                if (biguan_flag == true)
-                {
-                    biguan_flag = false;
-                }
-                else
-                {
-                    biguan_flag = true;
-                }
+                biguan_flag = biguan_flag ? false : true;
             }
-            GUIStyle textStyle = new GUIStyle();
-            if (biguan_flag == true)
-            {
-                textStyle.normal.textColor = new Color(152f, 195f, 121f);
-                GUILayout.Label("已启用", textStyle);
-            }
-            else
-            {
-                textStyle.normal.textColor = new Color(210f, 71f, 16f);
-                GUILayout.Label("已关闭", textStyle);
-            }
+            GUILayout.Label(biguan_flag ? "已启用" : "已停用", GUILayout.Width(60f));
         }
 
         public void no_consume_strength()
@@ -286,19 +342,7 @@ namespace DaYanJiangHu
                     tili_flag = true;
                 }
             }
-            GUIStyle tili_textStyle = new GUIStyle();
-            if (tili_flag == true)
-            {
-                tili_textStyle.normal.textColor = new Color(152f, 195f, 121f);
-                GUILayout.Label("已启用", tili_textStyle);
-                GUILayout.FlexibleSpace();
-            }
-            else
-            {
-                tili_textStyle.normal.textColor = new Color(210f, 71f, 16f);
-                GUILayout.Label("已关闭", tili_textStyle);
-                GUILayout.FlexibleSpace();
-            }
+            GUILayout.Label(tili_flag ? "已启用" : "已停用", GUILayout.Width(60f));
         }
 
         //添加弟子
@@ -306,10 +350,12 @@ namespace DaYanJiangHu
         {
             if (GUILayout.Button("喜提妹子"))
             {
+                sex = "女";
                 add_roles(sex);
             }
             if (GUILayout.Button("天降猛男"))
             {
+                sex = "男";
                 add_roles(sex);
             }
             if (GUILayout.Button("雷劫洗礼"))
@@ -323,7 +369,7 @@ namespace DaYanJiangHu
                     this.supper_roles_flag = true;
                 }
             }
-            GUILayout.Label(this.supper_roles_flag ? "已开启" : "已关闭");
+            GUILayout.Label(this.supper_roles_flag ? "已开启" : "已关闭", GUILayout.Width(60f));
             //if (GUILayout.Button("虚空取物"))
             //{
 
@@ -331,12 +377,35 @@ namespace DaYanJiangHu
 
         }
 
+
+        public bool check_is_created_org()
+        {
+            int years_0 = OpenUi._instance.Gamedatas.years_0;
+            int years_1 = OpenUi._instance.Gamedatas.years_1;
+            int years_2 = OpenUi._instance.Gamedatas.years_2;
+            int month = OpenUi._instance.Gamedatas.month;
+            if((years_0 + years_1 + years_2) >= 1 && month >= 3)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
         public void add_roles(string sex)
         {
-            Roles roles = RoleManager.instance.GetRoles(OpenUi._instance.Gamedatas.PlayerFaction, OpenUi._instance.Gamedatas.res_fame, 1);
+            if (!check_is_created_org())
+            {
+                return;
+            }
+            Roles roles = RoleManager.instance.GetRoles(OpenUi._instance.Gamedatas.PlayerFaction, OpenUi._instance.Gamedatas.res_fame, 2);
             if (roles != null && sex != null)
             {
-                Debug.LogFormat("性别: {0}", roles.Sex);
+                //Debug.LogFormat("性别: {0}, 身份: {1}", roles.Sex, roles.identity);
+                //Debug.LogFormat("People_dt: {0},", OpenUi._instance.Gamedatas.People_dt);
                 if (sex == null || roles.Sex.Equals(sex))
                 {
                     if (supper_roles_flag)
@@ -360,7 +429,45 @@ namespace DaYanJiangHu
                         //剑
                         roles.Potential_Sword = Roles.Potential.无双;
                     }
+                    roles.identity = Roles.Identity.入门弟子;
+                    
                     OpenUi._instance.Gamedatas.Roles_player.Add(roles);
+                    OpenUi._instance.Gamedatas.Number_rm += 1;
+                    OpenUi._instance.Gamedatas.People_dt += 1;
+                    Debug.LogFormat("People_dt: {0}", OpenUi._instance.Gamedatas.People_dt);
+                    Debug.LogFormat("Roles_Wuguan: {0}", OpenUi._instance.Gamedatas.Roles_Wuguan);
+                    //for (int j = 0; j < People.Instance.rumen.transform.childCount; j++)
+                    //{
+                    //    for (int k = 0; k < People.Instance.rumen.transform.GetChild(j).childCount; k++)
+                    //    {
+                    //        if (roles.ID == People.Instance.rumen.transform.GetChild(j).GetChild(k).GetComponent<RoleUI>().Roles.ID)
+                    //        {
+                    //            //if (true)
+                    //            //{
+                    //            //    OpenUi._instance.dating.GetComponent<UI>().BG_gl.GetComponent<RoleSlot>().rumen.transform.GetChild(2).GetComponent<roleList_R>()
+                    //            //        .UpRole(roles, People.Instance.qinchuan.transform.GetChild(j).GetChild(k).gameObject);
+                    //            //}
+                    //            OpenUi._instance.dating.GetComponent<UI>().BG_gl.GetComponent<RoleSlot>().sorting_rm = true;
+                    //            OpenUi._instance.Opentalk();
+                    //            OpenUi._instance.talk.GetComponent<MapDialogUI>().Camping();
+                    //            OpenUi._instance.talk.GetComponent<DialogManager>().SetRole(roles);
+                    //            //OpenUi._instance.talk.GetComponent<DialogManager>().setRoleDown_q(true);
+                    //            OpenUi._instance.talk.GetComponent<DialogManager>().Roles = roles;
+                    //            //this.close();
+                    //            //Object.Destroy(People.Instance.qinchuan.transform.GetChild(j).GetChild(k).gameObject);
+                    //            //return;
+                    //        }
+                    //    }
+                    //}
+                    //List<Roles> rolesPlayer = OpenUi._instance.Gamedatas.Roles_player;
+                    //if (rolesPlayer != null)
+                    //{
+                    //    foreach(Roles rolePlayer in rolesPlayer)
+                    //    {
+                    //        Debug.LogFormat("identity: {0}, State_r: {1}", rolePlayer.identity.ToString(), rolePlayer.State_r);
+                    //    }
+                    //}
+                    OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind(roles.Name + "成功移民来到了您的门派");
                 }
                 else
                 {
@@ -369,7 +476,7 @@ namespace DaYanJiangHu
             }
         }
 
-        public void add_item()
+        public void add_item_bak()
         {
 
             if (default_item == null || default_item != config_item.Value)
