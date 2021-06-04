@@ -10,6 +10,8 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using UnityEngine.UI;
+using System.Reflection;
 
 namespace DaYanJiangHu
 {
@@ -25,8 +27,9 @@ namespace DaYanJiangHu
         // 窗口开关
         private bool DisplayingWindow = false;
         private bool training_consume = false;
-        private static bool biguan_flag = false;
+        private static bool biguan_flag = true;
         private static bool tili_flag = false;
+        private static bool shen_gong_flag = true;
 
         private static int x_resolution = 1920;
         private static int y_resolution = 1080;
@@ -41,6 +44,7 @@ namespace DaYanJiangHu
 
         private string default_sex = "女";
         private bool supper_roles_flag = true;
+
 
         //private Vector2 scrollPosition;
         // 启动按键
@@ -146,10 +150,153 @@ namespace DaYanJiangHu
                 save_items_to_file();
                 add_item();
                 GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+                //获取内功
+                gen_neigong();
+                GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
             //定义窗体可以活动的范围
             GUI.DragWindow(new Rect(0, 0, UnityEngine.Screen.width, UnityEngine.Screen.height));
+        }
+
+        private void gen_neigong()
+        {
+            if (GUILayout.Button("随机获取内功"))
+            {
+                List<Item.Quality> item_quality = new List<Item.Quality>();
+                item_quality.Add(Item.Quality.卖艺把式);
+                item_quality.Add(Item.Quality.防身之术);
+                item_quality.Add(Item.Quality.寻常武艺);
+                item_quality.Add(Item.Quality.一流功夫);
+                item_quality.Add(Item.Quality.高深武学);
+                item_quality.Add(Item.Quality.盖世神功);
+                int i = UnityEngine.Random.Range(0, item_quality.Count);
+                if (shen_gong_flag)
+                {
+                    item_quality[i] = Item.Quality.盖世神功;
+                }
+                string text = "<color=#FFFFFF>";
+                switch (item_quality[i])
+                {
+                    case Item.Quality.防身之术:
+                        text = "<color=#D3D938>";
+                        break;
+                    case Item.Quality.寻常武艺:
+                        text = "<color=#38D946>";
+                        break;
+                    case Item.Quality.一流功夫:
+                        text = "<color=#63F0FF>";
+                        break;
+                    case Item.Quality.高深武学:
+                        text = "<color=#FF4840>";
+                        break;
+                    case Item.Quality.盖世神功:
+                        text = "<color=#FFB243>";
+                        break;
+                }
+                Item gongfa = NeiGongManager._instance.GetNeiGong(item_quality[i]);
+                OpenUi._instance.Warehouse.GetComponent<Inventory>().StoreItem(gongfa);
+                OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("获得新的" + gongfa.itemType.ToString() + "：" + text + gongfa.quality.ToString() + "·" + gongfa.Name + "</color>");
+                if (gongfa.quality == Item.Quality.盖世神功 || gongfa.quality == Item.Quality.高深武学 || gongfa.quality == Item.Quality.一流功夫)
+                {
+                    OpenUi._instance.HomeMessage.Add("获得重要物品（" + text + gongfa.itemType.ToString() + "</color>）：" + text + gongfa.quality.ToString() + "·" + gongfa.Name + "</color>");
+                }
+            }
+            if (GUILayout.Button("随机获取外功"))
+            {
+                List<Item.Quality> item_quality = new List<Item.Quality>();
+                item_quality.Add(Item.Quality.卖艺把式);
+                item_quality.Add(Item.Quality.防身之术);
+                item_quality.Add(Item.Quality.寻常武艺);
+                item_quality.Add(Item.Quality.一流功夫);
+                item_quality.Add(Item.Quality.高深武学);
+                item_quality.Add(Item.Quality.盖世神功);
+                int i = UnityEngine.Random.Range(0, item_quality.Count);
+                if (shen_gong_flag)
+                {
+                    item_quality[i] = Item.Quality.盖世神功;
+                }
+                string text = "<color=#FFFFFF>";
+                switch (item_quality[i])
+                {
+                    case Item.Quality.防身之术:
+                        text = "<color=#D3D938>";
+                        break;
+                    case Item.Quality.寻常武艺:
+                        text = "<color=#38D946>";
+                        break;
+                    case Item.Quality.一流功夫:
+                        text = "<color=#63F0FF>";
+                        break;
+                    case Item.Quality.高深武学:
+                        text = "<color=#FF4840>";
+                        break;
+                    case Item.Quality.盖世神功:
+                        text = "<color=#FFB243>";
+                        break;
+                }
+                Item gongfa = WaiGongManager._instance.GetWaiGong(item_quality[i]);
+                OpenUi._instance.Warehouse.GetComponent<Inventory>().StoreItem(gongfa);
+                OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("获得新的" + gongfa.itemType.ToString() + "：" + text + gongfa.quality.ToString() + "·" + gongfa.Name + "</color>");
+                if (gongfa.quality == Item.Quality.盖世神功 || gongfa.quality == Item.Quality.高深武学 || gongfa.quality == Item.Quality.一流功夫)
+                {
+                    OpenUi._instance.HomeMessage.Add("获得重要物品（" + text + gongfa.itemType.ToString() + "</color>）：" + text + gongfa.quality.ToString() + "·" + gongfa.Name + "</color>");
+                }
+            }
+            if (GUILayout.Button("随机获取身法"))
+            {
+                List<Item.Quality> item_quality = new List<Item.Quality>();
+                item_quality.Add(Item.Quality.卖艺把式);
+                item_quality.Add(Item.Quality.防身之术);
+                item_quality.Add(Item.Quality.寻常武艺);
+                item_quality.Add(Item.Quality.一流功夫);
+                item_quality.Add(Item.Quality.高深武学);
+                item_quality.Add(Item.Quality.盖世神功);
+                int i = UnityEngine.Random.Range(0, item_quality.Count);
+                if (shen_gong_flag)
+                {
+                    item_quality[i] = Item.Quality.盖世神功;
+                }
+                string text = "<color=#FFFFFF>";
+                switch (item_quality[i])
+                {
+                    case Item.Quality.防身之术:
+                        text = "<color=#D3D938>";
+                        break;
+                    case Item.Quality.寻常武艺:
+                        text = "<color=#38D946>";
+                        break;
+                    case Item.Quality.一流功夫:
+                        text = "<color=#63F0FF>";
+                        break;
+                    case Item.Quality.高深武学:
+                        text = "<color=#FF4840>";
+                        break;
+                    case Item.Quality.盖世神功:
+                        text = "<color=#FFB243>";
+                        break;
+                }
+                Item gongfa = ShenFaManager._instance.GetShenFa(item_quality[i]);
+                OpenUi._instance.Warehouse.GetComponent<Inventory>().StoreItem(gongfa);
+                OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("获得新的" + gongfa.itemType.ToString() + "：" + text + gongfa.quality.ToString() + "·" + gongfa.Name + "</color>");
+                if (gongfa.quality == Item.Quality.盖世神功 || gongfa.quality == Item.Quality.高深武学 || gongfa.quality == Item.Quality.一流功夫)
+                {
+                    OpenUi._instance.HomeMessage.Add("获得重要物品（" + text + gongfa.itemType.ToString() + "</color>）：" + text + gongfa.quality.ToString() + "·" + gongfa.Name + "</color>");
+                }
+            }
+            if (GUILayout.Button("神功模式"))
+            {
+                if (shen_gong_flag)
+                {
+                    shen_gong_flag = false;
+                }
+                else
+                {
+                    shen_gong_flag = true;
+                }
+            }
+            GUILayout.Label(shen_gong_flag ? "已开启" : "已关闭", GUILayout.Width(60f));
         }
 
         private void save_items_to_local()
@@ -188,12 +335,13 @@ namespace DaYanJiangHu
                             selectedItem.Add(item);
                         }
                     }
-                    if(selectedItem.Count > 0)
+                    if (selectedItem.Count > 0)
                     {
                         int i = UnityEngine.Random.Range(0, selectedItem.Count);
                         OpenUi._instance.Warehouse.GetComponent<Inventory>().StoreItem(selectedItem[i]);
                         OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind(selectedItem[i].Name + "已通过虚空取物进入到您的仓库");
-                    } else
+                    }
+                    else
                     {
                         OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("无此物品，请进入游戏安装目录下的info.txt文件查找所需物品");
                     }
@@ -233,7 +381,7 @@ namespace DaYanJiangHu
             {
                 config_item = Config.AddSetting("物品选择", "物品名称", default_item, new ConfigDescription("物品选择1", null, new AcceptableValueList<string>(item_names.ToArray())));
             }
-            
+
         }
 
         public void save_game()
@@ -351,12 +499,12 @@ namespace DaYanJiangHu
             if (GUILayout.Button("喜提妹子"))
             {
                 sex = "女";
-                add_roles(sex);
+                add_roles_1(sex);
             }
             if (GUILayout.Button("天降猛男"))
             {
                 sex = "男";
-                add_roles(sex);
+                add_roles_1(sex);
             }
             if (GUILayout.Button("雷劫洗礼"))
             {
@@ -384,7 +532,7 @@ namespace DaYanJiangHu
             int years_1 = OpenUi._instance.Gamedatas.years_1;
             int years_2 = OpenUi._instance.Gamedatas.years_2;
             int month = OpenUi._instance.Gamedatas.month;
-            if((years_0 + years_1 + years_2) >= 1 && month >= 3)
+            if ((years_0 + years_1 + years_2) >= 1 && month >= 3)
             {
                 return true;
             }
@@ -395,17 +543,92 @@ namespace DaYanJiangHu
 
         }
 
+        public void add_roles_1(string sex)
+        {
+            if (!check_is_created_org())
+            {
+                return;
+            }
+            //int currentData = OpenUi._instance.dating.GetComponent<UI>().BG_gl.GetComponent<RoleSlot>().rumen.transform.childCount;
+            int currentData = OpenUi._instance.Gamedatas.Number_rm;
+            Roles roles = null;
+            bool flag = true;
+            for (int i = 0; i < currentData; i++)
+            {
+                int rumen_count = OpenUi._instance.dating.GetComponent<UI>().BG_gl.GetComponent<RoleSlot>().rumen.transform.GetChild(i).childCount;
+                if (rumen_count < 8)
+                {
+                    roles = RoleManager.instance.GetRoles(OpenUi._instance.Gamedatas.PlayerFaction, OpenUi._instance.Gamedatas.res_fame, UnityEngine.Random.Range(2, 4));
+                }
+                else
+                {
+                    roles = RoleManager.instance.GetRoles(OpenUi._instance.Gamedatas.PlayerFaction, OpenUi._instance.Gamedatas.res_fame, 1);
+                }
+
+                if (roles != null && sex != null)
+                {
+                    if (sex == null || roles.Sex.Equals(sex))
+                    {
+                        flag = true;
+                        if (supper_roles_flag)
+                        {
+                            //力量
+                            roles.Potential_Power = Roles.Potential.无双;
+                            //内力
+                            roles.Potential_Inter = Roles.Potential.无双;
+                            //体魄
+                            roles.Potential_Body = Roles.Potential.无双;
+                            //洞察
+                            roles.Potential_Insight = Roles.Potential.无双;
+                            //灵敏
+                            roles.Potential_Agile = Roles.Potential.无双;
+                            //韧性
+                            roles.Potential_Toughness = Roles.Potential.无双;
+                            //悟性
+                            roles.Potential_Under = Roles.Potential.无双;
+                            //刀
+                            roles.Potential_knife = Roles.Potential.无双;
+                            //剑
+                            roles.Potential_Sword = Roles.Potential.无双;
+                        }
+                        roles.Salary *= -1;
+                        OpenUi._instance.Gamedatas.Roles_player.Add(roles);
+                        OpenUi._instance.Gamedatas.Number_rm += 1;
+                        OpenUi._instance.Gamedatas.People_dt += 1;
+                        Debug.LogFormat("currentData: {0}", currentData);
+                        Debug.LogFormat("People_dt: {0}", OpenUi._instance.Gamedatas.People_dt);
+                        Debug.LogFormat("Roles_Wuguan: {0}", OpenUi._instance.Gamedatas.Roles_Wuguan);
+                        Debug.LogFormat("Number_rm: {0}", OpenUi._instance.Gamedatas.Number_rm);
+                        int pageSize = OpenUi._instance.Gamedatas.Number_rm / 8;
+                        //Convert.ToInt32(Math.Truncate(pageSize));
+                        Debug.LogFormat("pageSize: {0}", pageSize);
+                        //OpenUi._instance.talk.GetComponent<DialogManager>().roles.Add(roles);
+                        OpenUi._instance.dating.GetComponent<UI>().BG_gl.GetComponent<RoleSlot>().rumen.transform.GetChild(currentData / 8).GetComponent<roleList_R>().GetRoleList(roles);
+                        OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind(roles.Name + "成功移民来到了您的门派");
+                        return;
+                    }
+                    else
+                    {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+            if (!flag)
+            {
+                add_roles(sex);
+            }
+        }
+
         public void add_roles(string sex)
         {
             if (!check_is_created_org())
             {
                 return;
             }
-            Roles roles = RoleManager.instance.GetRoles(OpenUi._instance.Gamedatas.PlayerFaction, OpenUi._instance.Gamedatas.res_fame, 2);
+            Roles roles = RoleManager.instance.GetRoles(OpenUi._instance.Gamedatas.PlayerFaction, OpenUi._instance.Gamedatas.res_fame, UnityEngine.Random.Range(2, 4));
             if (roles != null && sex != null)
             {
-                //Debug.LogFormat("性别: {0}, 身份: {1}", roles.Sex, roles.identity);
-                //Debug.LogFormat("People_dt: {0},", OpenUi._instance.Gamedatas.People_dt);
                 if (sex == null || roles.Sex.Equals(sex))
                 {
                     if (supper_roles_flag)
@@ -429,44 +652,32 @@ namespace DaYanJiangHu
                         //剑
                         roles.Potential_Sword = Roles.Potential.无双;
                     }
-                    roles.identity = Roles.Identity.入门弟子;
-                    
+                    roles.Salary *= -1;
                     OpenUi._instance.Gamedatas.Roles_player.Add(roles);
                     OpenUi._instance.Gamedatas.Number_rm += 1;
                     OpenUi._instance.Gamedatas.People_dt += 1;
+                    int currentData = OpenUi._instance.dating.GetComponent<UI>().BG_gl.GetComponent<RoleSlot>().rumen.transform.childCount;
+                    Debug.LogFormat("currentData: {0}", currentData);
+                    for (int i = 0; i < currentData; i++)
+                    {
+                        if (OpenUi._instance.dating.GetComponent<UI>().BG_gl.GetComponent<RoleSlot>().rumen.transform.GetChild(i).childCount < 8)
+                        {
+
+                        }
+                        else
+                        {
+                            roles = RoleManager.instance.GetRoles(OpenUi._instance.Gamedatas.PlayerFaction, OpenUi._instance.Gamedatas.res_fame, 1);
+                        }
+                        //    if (i > 8)
+                        //{
+                        //    i += 1;
+                        //    currentData += 1;
+                        //}
+                        OpenUi._instance.dating.GetComponent<UI>().BG_gl.GetComponent<RoleSlot>().rumen.transform.GetChild(i).GetComponent<roleList_R>().GetRoleList(roles);
+                    }
+
                     Debug.LogFormat("People_dt: {0}", OpenUi._instance.Gamedatas.People_dt);
                     Debug.LogFormat("Roles_Wuguan: {0}", OpenUi._instance.Gamedatas.Roles_Wuguan);
-                    //for (int j = 0; j < People.Instance.rumen.transform.childCount; j++)
-                    //{
-                    //    for (int k = 0; k < People.Instance.rumen.transform.GetChild(j).childCount; k++)
-                    //    {
-                    //        if (roles.ID == People.Instance.rumen.transform.GetChild(j).GetChild(k).GetComponent<RoleUI>().Roles.ID)
-                    //        {
-                    //            //if (true)
-                    //            //{
-                    //            //    OpenUi._instance.dating.GetComponent<UI>().BG_gl.GetComponent<RoleSlot>().rumen.transform.GetChild(2).GetComponent<roleList_R>()
-                    //            //        .UpRole(roles, People.Instance.qinchuan.transform.GetChild(j).GetChild(k).gameObject);
-                    //            //}
-                    //            OpenUi._instance.dating.GetComponent<UI>().BG_gl.GetComponent<RoleSlot>().sorting_rm = true;
-                    //            OpenUi._instance.Opentalk();
-                    //            OpenUi._instance.talk.GetComponent<MapDialogUI>().Camping();
-                    //            OpenUi._instance.talk.GetComponent<DialogManager>().SetRole(roles);
-                    //            //OpenUi._instance.talk.GetComponent<DialogManager>().setRoleDown_q(true);
-                    //            OpenUi._instance.talk.GetComponent<DialogManager>().Roles = roles;
-                    //            //this.close();
-                    //            //Object.Destroy(People.Instance.qinchuan.transform.GetChild(j).GetChild(k).gameObject);
-                    //            //return;
-                    //        }
-                    //    }
-                    //}
-                    //List<Roles> rolesPlayer = OpenUi._instance.Gamedatas.Roles_player;
-                    //if (rolesPlayer != null)
-                    //{
-                    //    foreach(Roles rolePlayer in rolesPlayer)
-                    //    {
-                    //        Debug.LogFormat("identity: {0}, State_r: {1}", rolePlayer.identity.ToString(), rolePlayer.State_r);
-                    //    }
-                    //}
                     OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind(roles.Name + "成功移民来到了您的门派");
                 }
                 else
@@ -735,6 +946,16 @@ namespace DaYanJiangHu
         }
 
 
+
+        //连续闭关
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(RoleDataOperations), "MasterRolesPractice")]
+        public static void RoleDataOperations_MasterRolesPractice_Transpiler(ref RoleDataOperations __instance)
+        {
+            OpenUi._instance.Gamedatas.MasterRoles.PracticeTime_now = 1;
+        }
+
+
         //连续闭关
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(RoleDataOperations), "MasterRolesPractice")]
@@ -805,16 +1026,16 @@ namespace DaYanJiangHu
             string tradeTime = DateTime.Now.ToString("yyyy-MM-dd HH：mm：ss", DateTimeFormatInfo.InvariantInfo);
             foreach (CodeInstruction code in codes)
             {
-                Debug.LogFormat("时间: {0}, 数据: {1}", tradeTime, code.operand);
+                //Debug.LogFormat("时间: {0}, 数据: {1}", tradeTime, code.operand);
                 //var methodInfo = AccessTools.Method(typeof(UnityEngine.Random), nameof(UnityEngine.Random.Range), new System.Type[] { typeof(int), typeof(int) });
                 if (code.opcode == OpCodes.Ldc_I4 && code.operand != null && code.operand == (object)1800)
                 {
-                    Debug.LogFormat("code.operand == 1800 IL值: {0}", code.operand);
+                    //Debug.LogFormat("code.operand == 1800 IL值: {0}", code.operand);
                     yield return new CodeInstruction(OpCodes.Ldc_R4, 0.001);
                 }
                 if (code.opcode == OpCodes.Ldc_I4 && code.operand != null && code.operand == (object)3000)
                 {
-                    Debug.LogFormat("code.operand == 1800 IL值: {0}", code.operand);
+                    //Debug.LogFormat("code.operand == 1800 IL值: {0}", code.operand);
                     yield return new CodeInstruction(OpCodes.Ldc_R4, 0.002);
                 }
                 yield return code;
@@ -835,12 +1056,174 @@ namespace DaYanJiangHu
         [HarmonyPostfix]
         //[HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { typeof(string), typeof(Item.Quality), typeof(int), typeof(string), typeof(string), typeof(Item.ItemType) })]
         [HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { })]
-        public static void GetGongFa_GetInput_Transpiler(ref GetGongFa __instance, ref Item __result, ref float __state)
+        public static void GetGongFa_GongFaGet_Transpiler(ref GetGongFa __instance, ref Item __result, ref float __state)
+        {
+            //string tradeTime = DateTime.Now.ToString("yyyy-MM-dd HH：mm：ss", DateTimeFormatInfo.InvariantInfo);
+            Debug.LogFormat("创建功法 __atk: {0}", __state);
+            //List<Item.Quality> good_qualitys = new List<Item.Quality>();
+            //good_qualitys.Add(Item.Quality.精品);
+            //good_qualitys.Add(Item.Quality.绝品);
+            //good_qualitys.Add(Item.Quality.神品);
+            //good_qualitys.Add(Item.Quality.一流功夫);
+            //good_qualitys.Add(Item.Quality.高深武学);
+            //good_qualitys.Add(Item.Quality.盖世神功);
+            Get_z._instance.Atk = __state;
+            //if (good_qualitys.Contains(__result.quality))
+            //{
+            //    string text = "<color=#FFFFFF>";
+            //    switch (__instance.gongfa.quality)
+            //    {
+            //        case Item.Quality.防身之术:
+            //            text = "<color=#D3D938>";
+            //            break;
+            //        case Item.Quality.寻常武艺:
+            //            text = "<color=#38D946>";
+            //            break;
+            //        case Item.Quality.一流功夫:
+            //            text = "<color=#63F0FF>";
+            //            break;
+            //        case Item.Quality.高深武学:
+            //            text = "<color=#FF4840>";
+            //            break;
+            //        case Item.Quality.盖世神功:
+            //            text = "<color=#FFB243>";
+            //            break;
+            //    }
+            //OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("获得新的" + __instance.gongfa.itemType.ToString() + "：" + text + __instance.gongfa.quality.ToString() + "·" + __instance.gongfa.Name + "</color>");
+            //OpenUi._instance.HomeMessage.Add("获得重要物品（" + text + __instance.gongfa.itemType.ToString() + "</color>）：" + text + __instance.gongfa.quality.ToString() + "·" + __instance.gongfa.Name + "</color>");
+            //}
+        }
+
+        //功法
+        //[HarmonyPostfix]
+        ////[HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { typeof(string), typeof(Item.Quality), typeof(int), typeof(string), typeof(string), typeof(Item.ItemType) })]
+        //[HarmonyPatch(typeof(GetGongFa), "GetInput", new Type[] { })]
+        //public static void GetGongFa_GetInput_Transpiler(ref GetGongFa __instance)
+        //{
+        //    string tradeTime = DateTime.Now.ToString("yyyy-MM-dd HH：mm：ss", DateTimeFormatInfo.InvariantInfo);
+        //    List<Item.Quality> good_qualitys = new List<Item.Quality>();
+        //    good_qualitys.Add(Item.Quality.精品);
+        //    good_qualitys.Add(Item.Quality.绝品);
+        //    good_qualitys.Add(Item.Quality.神品);
+        //    good_qualitys.Add(Item.Quality.一流功夫);
+        //    good_qualitys.Add(Item.Quality.高深武学);
+        //    good_qualitys.Add(Item.Quality.盖世神功);
+        //    if (good_qualitys.Contains(__instance.gongfa.quality))
+        //    {
+        //        string text = "<color=#FFFFFF>";
+        //        switch (__instance.gongfa.quality)
+        //        {
+        //            case Item.Quality.防身之术:
+        //                text = "<color=#D3D938>";
+        //                break;
+        //            case Item.Quality.寻常武艺:
+        //                text = "<color=#38D946>";
+        //                break;
+        //            case Item.Quality.一流功夫:
+        //                text = "<color=#63F0FF>";
+        //                break;
+        //            case Item.Quality.高深武学:
+        //                text = "<color=#FF4840>";
+        //                break;
+        //            case Item.Quality.盖世神功:
+        //                text = "<color=#FFB243>";
+        //                break;
+        //        }
+        //        //OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("获得新的" + __instance.gongfa.itemType.ToString() + "：" + text + __instance.gongfa.quality.ToString() + "·" + __instance.gongfa.Name + "</color>");
+        //        OpenUi._instance.HomeMessage.Add("获得重要物品（" + text + __instance.gongfa.itemType.ToString() + "</color>）：" + text + __instance.gongfa.quality.ToString() + "·" + __instance.gongfa.Name + "</color>");
+        //    }
+        //}
+
+        [HarmonyPostfix]
+        //[HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { typeof(string), typeof(Item.Quality), typeof(int), typeof(string), typeof(string), typeof(Item.ItemType) })]
+        [HarmonyPatch(typeof(GetGongFa), "OutInput", new Type[] { })]
+        public static void GetGongFa_OutInput_Postfix(ref GetGongFa __instance)
         {
             string tradeTime = DateTime.Now.ToString("yyyy-MM-dd HH：mm：ss", DateTimeFormatInfo.InvariantInfo);
-            Debug.LogFormat("创建功法: 时间{0}, 名称: {1}, __atk: {2}", tradeTime, __result.Name, __state);
-            Get_z._instance.Atk = __state;
-
+            Item item = Slot_z._instance.Item;
+            List<Item.Quality> good_qualitys = new List<Item.Quality>();
+            good_qualitys.Add(Item.Quality.精品);
+            good_qualitys.Add(Item.Quality.绝品);
+            good_qualitys.Add(Item.Quality.神品);
+            good_qualitys.Add(Item.Quality.一流功夫);
+            good_qualitys.Add(Item.Quality.高深武学);
+            good_qualitys.Add(Item.Quality.盖世神功);
+            if (good_qualitys.Contains(item.quality))
+            {
+                string text = "<color=#FFFFFF>";
+                switch (item.quality)
+                {
+                    case Item.Quality.防身之术:
+                        text = "<color=#D3D938>";
+                        break;
+                    case Item.Quality.寻常武艺:
+                        text = "<color=#38D946>";
+                        break;
+                    case Item.Quality.一流功夫:
+                        text = "<color=#63F0FF>";
+                        break;
+                    case Item.Quality.高深武学:
+                        text = "<color=#FF4840>";
+                        break;
+                    case Item.Quality.盖世神功:
+                        text = "<color=#FFB243>";
+                        break;
+                }
+                OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("获得新的" + item.itemType.ToString() + "：" + text + item.quality.ToString() + "·" + item.Name + "</color>");
+                //OpenUi._instance.HomeMessage.Add("获得重要物品（" + text + __instance.gongfa.itemType.ToString() + "</color>）：" + text + __instance.gongfa.quality.ToString() + "·" + __instance.gongfa.Name + "</color>");
+            }
         }
+
+        //功法
+        [HarmonyPostfix]
+        //[HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { typeof(string), typeof(Item.Quality), typeof(int), typeof(string), typeof(string), typeof(Item.ItemType) })]
+        [HarmonyPatch(typeof(Tasks), "GetTasksRemuneration", new Type[] { })]
+        public static void Tasks_GetTasksRemuneration_postfix(ref Tasks __instance)
+        {
+            __instance.state = Tasks.State.已完成;
+            List<Roles> task_roles = __instance.Taskroles;
+            List<string> roles_name = new List<string>();
+            foreach (Roles role in task_roles)
+            {
+                Debug.LogFormat("任务名：{0}，任务角色: {1}", __instance.TaskName, role.Name);
+                roles_name.Add(role.Name);
+                //role.rolestate = Roles.RoleState.None;
+            }
+            int count = roles_name.Count;
+            string text = "<color=#578bbb>";
+            text += string.Join(", ", roles_name);
+            if (count == 1)
+            {
+                text += "</color> 独自完成了 <color=#47ba8b>" + __instance.TaskName + "</color> 任务";
+                OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind(text);
+            }
+            if (count > 1)
+            {
+                text += "</color> 共同完成了 <color=#47ba8b>" + __instance.TaskName + "</color> 任务";
+                OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind(text);
+            }
+
+            //__instance.Taskroles = new List<Roles>();
+            //List<Tasks> TasksItemSlotList = OpenUi._instance.Gamedatas.tasksList;
+            //Debug.LogFormat("测试任务完成！！！！！！！！！{0}", TasksItemSlotList.Length);
+        }
+
+        //功法
+        //[HarmonyPostfix]
+        ////[HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { typeof(string), typeof(Item.Quality), typeof(int), typeof(string), typeof(string), typeof(Item.ItemType) })]
+        //[HarmonyPatch(typeof(TasksItem), "ClearSlot", new Type[] { })]
+        //public static void OpenUi_ClearSlot_postfix()
+        //{
+        //    //TasksItemSlot[] TasksItemSlotList = (TasksItemSlot[])Traverse.Create(__instance).Field("TasksItemSlotList").GetValue();
+        //    //foreach (TasksItemSlot tasksItemSlot in TasksItemSlotList)
+        //    //{
+        //    //    Debug.LogFormat("任务: {0}, {1}", tasksItemSlot.GetItemType(), tasksItemSlot.GetItemId());
+        //    //    if (tasksItemSlot.transform.childCount != 0)
+        //    //    {
+        //    //        UnityEngine.Object.Destroy(tasksItemSlot.transform.GetChild(0).gameObject);
+        //    //    }
+        //    //}
+        //    //Debug.LogFormat("点击完成任务！！！！！！！！！");
+        //}
     }
 }
