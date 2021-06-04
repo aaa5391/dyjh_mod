@@ -4,6 +4,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
+using UnityEditor;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +51,8 @@ namespace DaYanJiangHu
         // 启动按键
         private ConfigEntry<KeyboardShortcut> ShowCounter { get; set; }
 
+        private Sprite skill_04_;
+
         [Obsolete]
         void Start()
         {
@@ -59,6 +62,16 @@ namespace DaYanJiangHu
             //save_items_to_local();
             //update_item_config();
             Logger.LogDebug("测试MOD");
+            var ab = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("DaYanJiangHu.skill_04_"));
+            skill_04_ = ab.LoadAsset<Sprite>("skill_04_");
+            List<Item> items = ItemsManager.instance.getitemList();
+            foreach(Item item in items)
+            {
+                if(item.Sprite == "skill_04_")
+                {
+                    //item.Sprite = skill_04_
+                }
+            }
             //add_item();
         }
 
@@ -565,7 +578,7 @@ namespace DaYanJiangHu
                     roles = RoleManager.instance.GetRoles(OpenUi._instance.Gamedatas.PlayerFaction, OpenUi._instance.Gamedatas.res_fame, 1);
                 }
 
-                if (roles != null && sex != null)
+                if (roles != null )
                 {
                     if (sex == null || roles.Sex.Equals(sex))
                     {
