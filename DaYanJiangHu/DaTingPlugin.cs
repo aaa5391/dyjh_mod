@@ -29,7 +29,7 @@ namespace DaYanJiangHu
         private bool DisplayingWindow = false;
         private bool training_consume = false;
         private static bool biguan_flag = true;
-        private static bool tili_flag = false;
+        private static bool tili_flag = true;
         private static bool shen_gong_flag = true;
 
         private static int x_resolution = 1920;
@@ -62,16 +62,16 @@ namespace DaYanJiangHu
             //save_items_to_local();
             //update_item_config();
             Logger.LogDebug("测试MOD");
-            var ab = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("DaYanJiangHu.skill_04_"));
-            skill_04_ = ab.LoadAsset<Sprite>("skill_04_");
-            List<Item> items = ItemsManager.instance.getitemList();
-            foreach(Item item in items)
-            {
-                if(item.Sprite == "skill_04_")
-                {
-                    //item.Sprite = skill_04_
-                }
-            }
+            //var ab = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("DaYanJiangHu.skill_04_"));
+            //skill_04_ = ab.LoadAsset<Sprite>("skill_04_");
+            //List<Item> items = ItemsManager.instance.getitemList();
+            //foreach(Item item in items)
+            //{
+            //    if(item.Sprite == "skill_04_")
+            //    {
+            //        //item.Sprite = skill_04_
+            //    }
+            //}
             //add_item();
         }
 
@@ -1238,5 +1238,22 @@ namespace DaYanJiangHu
         //    //}
         //    //Debug.LogFormat("点击完成任务！！！！！！！！！");
         //}
+
+        [HarmonyPostfix]
+        //[HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { typeof(string), typeof(Item.Quality), typeof(int), typeof(string), typeof(string), typeof(Item.ItemType) })]
+        [HarmonyPatch(typeof(TasksItem), "ClearSlot", new Type[] { })]
+        public static void OpenUi_ClearSlot_postfix()
+        {
+            //TasksItemSlot[] TasksItemSlotList = (TasksItemSlot[])Traverse.Create(__instance).Field("TasksItemSlotList").GetValue();
+            //foreach (TasksItemSlot tasksItemSlot in TasksItemSlotList)
+            //{
+            //    Debug.LogFormat("任务: {0}, {1}", tasksItemSlot.GetItemType(), tasksItemSlot.GetItemId());
+            //    if (tasksItemSlot.transform.childCount != 0)
+            //    {
+            //        UnityEngine.Object.Destroy(tasksItemSlot.transform.GetChild(0).gameObject);
+            //    }
+            //}
+            //Debug.LogFormat("点击完成任务！！！！！！！！！");
+        }
     }
 }

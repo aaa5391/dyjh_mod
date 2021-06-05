@@ -15,3 +15,5 @@ F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Release\
 F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Release\DaYanJiangHu.pdb
 F:\SteamLibrary\steamapps\common\大衍江湖\BepInEx\plugins\DaYanJiangHu.dll
 F:\SteamLibrary\steamapps\common\大衍江湖\BepInEx\plugins\DaYanJiangHu.pdb
+F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Release\DaYanJiangHu.csproj.AssemblyReference.cache
+F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Release\DaYanJiangHu.csproj.CopyComplete
