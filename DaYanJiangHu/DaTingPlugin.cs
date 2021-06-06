@@ -47,12 +47,25 @@ namespace DaYanJiangHu
         private bool supper_roles_flag = true;
 
 
+        GameObject prefab_StarMapToolsBasePanel;//资源
+
         //private Vector2 scrollPosition;
         // 启动按键
         private ConfigEntry<KeyboardShortcut> ShowCounter { get; set; }
 
         private Sprite skill_04_;
 
+        static public string[] showText = new string[] { };
+        static public Sprite[] sprite;
+        static Dropdown dropDownItem;
+        static List<string> temoNames;
+        static List<Sprite> sprite_list;
+        static public GameObject panel;
+
+        public Dropdown dropDown;
+
+        [SerializeField]
+        Transform UIPanel;
         [Obsolete]
         void Start()
         {
@@ -62,6 +75,18 @@ namespace DaYanJiangHu
             //save_items_to_local();
             //update_item_config();
             Logger.LogDebug("测试MOD");
+            UIPanel = this.GetComponent<Transform>();
+            //TasksItemSlotList = base.GetComponentsInChildren<TasksItemSlot>();
+            //UIPanel.gameObject.SetActive(false);
+            //panel.SetActive(false);
+            //showText = new string[] { "AAA", "BBB" };
+            //dropDownItem = this.GetComponent<Dropdown>();
+            //temoNames = new List<string>();
+            //sprite_list = new List<Sprite>();
+            //AddNames(showText);
+            //UpdateDropDownItem(temoNames);
+            //var ab = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("StarMapTools.starmaptools"));
+            //prefab_StarMapToolsBasePanel = ab.LoadAsset<GameObject>("StarMapToolsBasePanel");
             //var ab = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("DaYanJiangHu.skill_04_"));
             //skill_04_ = ab.LoadAsset<Sprite>("skill_04_");
             //List<Item> items = ItemsManager.instance.getitemList();
@@ -75,14 +100,52 @@ namespace DaYanJiangHu
             //add_item();
         }
 
+        void UpdateDropDownItem(List<string> showNames)
+        {
+            showNames = new List<String>();
+            showNames.Add("AAA");
+            showNames.Add("BBB");
+            dropDownItem = this.GetComponent<Dropdown>();
+            //dropDownItem.options.Clear();
+            Dropdown.OptionData temoData;
+            for (int i = 0; i < showNames.Count; i++)
+            {
+                temoData = new Dropdown.OptionData();
+                temoData.text = showNames[i];
+                temoData.image = sprite_list[i];
+                dropDownItem.options.Add(temoData);
+            }
+            dropDownItem.captionText.text = showNames[0];
+        }
+
+
+        void AddNames(string[] showText)
+        {
+            showText = new string[] { "AAA", "BBB" };
+            Debug.LogFormat("showText: ", showText);
+            temoNames = new List<String>();
+            for (int i = 0; i < showText.Length; i++)
+            {
+                temoNames.Add(showText[i]);
+            }
+            sprite_list = new List<Sprite>();
+            sprite = new Sprite[] { };
+            for (int i = 0; i < sprite.Length; i++)
+            {
+                sprite_list.Add(sprite[i]);
+            }
+        }
+
         void Update()
         {
             //modify_resolution();
             //modify_dating_people();
             //modify_warehouse_capacity();
             //modify_money();
-
-
+            foreach (TasksItemSlot tasksItemSlot in base.GetComponentsInChildren<TasksItemSlot>())
+            {
+                Debug.LogFormat("有任务可销毁");
+            }
             // 监听脚本按键按下
             if (ShowCounter.Value.IsDown())
             {
@@ -106,6 +169,9 @@ namespace DaYanJiangHu
                 // 创建一个新窗口
                 // 注意：第一个参数(20210218)为窗口ID，ID尽量设置的与众不同，若与其他Mod的窗口ID相同，将会导致窗口冲突
                 windowRect = GUI.Window(20210530, windowRect, DoMyWindow, "辣鸡游戏MOD");
+                //panel.SetActive(true);
+
+
             }
         }
 
@@ -454,10 +520,38 @@ namespace DaYanJiangHu
         {
             if (GUILayout.Button("金钱+1000"))
             {
+
+                //UIPanel.gameObject.SetActive(true);
+                //List<Dropdown.OptionData> listOptions = new List<Dropdown.OptionData>();
+                //Debug.LogFormat("初始化成功");
+                //listOptions.Add(new Dropdown.OptionData("Option 0"));
+                //listOptions.Add(new Dropdown.OptionData("Option 1"));
+                //Debug.LogFormat("添加数据成功");
+                //AddDropDownOptionsData(listOptions);
+
                 OpenUi._instance.Gamedatas.res_money += 1000;
                 OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind("深受百姓爱戴，特赠礼: 金钱增加1000");
             }
         }
+
+        void AddDropDownOptionsData(List<Dropdown.OptionData> listOptions)
+        {
+            if(dropDown == null)
+            {
+                dropDown = this.GetComponent<Dropdown>();
+            }
+            dropDown.AddOptions(listOptions);
+        }
+
+
+        //void AddDropDownOptionsData(string itemText)
+        //{
+        //    //添加一个下拉选项
+        //    Dropdown.OptionData data = new Dropdown.OptionData();
+        //    data.text = itemText;
+        //    //data.image = "指定一个图片做背景不指定则使用默认"；
+        //    dropDown.options.Add(data);
+        //}
 
         public void add_food()
         {
@@ -1188,6 +1282,16 @@ namespace DaYanJiangHu
         }
 
         //功法
+        [HarmonyPrefix]
+        //[HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { typeof(string), typeof(Item.Quality), typeof(int), typeof(string), typeof(string), typeof(Item.ItemType) })]
+        [HarmonyPatch(typeof(Tasks), "GetTasksRemuneration", new Type[] { })]
+        public static bool Tasks_GetTasksRemuneration_pretfix(ref Tasks __instance)
+        {
+
+            return true;
+        }
+
+        //功法
         [HarmonyPostfix]
         //[HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { typeof(string), typeof(Item.Quality), typeof(int), typeof(string), typeof(string), typeof(Item.ItemType) })]
         [HarmonyPatch(typeof(Tasks), "GetTasksRemuneration", new Type[] { })]
@@ -1202,6 +1306,8 @@ namespace DaYanJiangHu
                 roles_name.Add(role.Name);
                 //role.rolestate = Roles.RoleState.None;
             }
+
+            
             int count = roles_name.Count;
             string text = "<color=#578bbb>";
             text += string.Join(", ", roles_name);
@@ -1215,45 +1321,159 @@ namespace DaYanJiangHu
                 text += "</color> 共同完成了 <color=#47ba8b>" + __instance.TaskName + "</color> 任务";
                 OpenUi._instance.systemobjet.GetComponent<SaveManager>().ShowRemind(text);
             }
-
+            //此处为自动完成任务的代码
+            OpenUi._instance.dating.GetComponent<UI>().BG_renwu.GetComponent<RenwuManager>().GetTasksRemuneration();
             //__instance.Taskroles = new List<Roles>();
             //List<Tasks> TasksItemSlotList = OpenUi._instance.Gamedatas.tasksList;
             //Debug.LogFormat("测试任务完成！！！！！！！！！{0}", TasksItemSlotList.Length);
         }
 
-        //功法
-        //[HarmonyPostfix]
-        ////[HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { typeof(string), typeof(Item.Quality), typeof(int), typeof(string), typeof(string), typeof(Item.ItemType) })]
-        //[HarmonyPatch(typeof(TasksItem), "ClearSlot", new Type[] { })]
-        //public static void OpenUi_ClearSlot_postfix()
-        //{
-        //    //TasksItemSlot[] TasksItemSlotList = (TasksItemSlot[])Traverse.Create(__instance).Field("TasksItemSlotList").GetValue();
-        //    //foreach (TasksItemSlot tasksItemSlot in TasksItemSlotList)
-        //    //{
-        //    //    Debug.LogFormat("任务: {0}, {1}", tasksItemSlot.GetItemType(), tasksItemSlot.GetItemId());
-        //    //    if (tasksItemSlot.transform.childCount != 0)
-        //    //    {
-        //    //        UnityEngine.Object.Destroy(tasksItemSlot.transform.GetChild(0).gameObject);
-        //    //    }
-        //    //}
-        //    //Debug.LogFormat("点击完成任务！！！！！！！！！");
-        //}
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Item), "GetToolTipText", new Type[] { })]
+        public static bool Item_GetToolTipText_prefix(ref Item __instance, ref string __state, ref string __result)
+        {
+            __state = __instance.Name;
+            __instance.Name = get_color_item_name(__instance.Name, __instance.quality);
+            return true;
+        }
 
         [HarmonyPostfix]
-        //[HarmonyPatch(typeof(GetGongFa), "GongFaGet", new Type[] { typeof(string), typeof(Item.Quality), typeof(int), typeof(string), typeof(string), typeof(Item.ItemType) })]
-        [HarmonyPatch(typeof(TasksItem), "ClearSlot", new Type[] { })]
-        public static void OpenUi_ClearSlot_postfix()
+        [HarmonyPatch(typeof(Item), "GetToolTipText", new Type[] { })]
+        public static void Item_GetToolTipText_postfix(ref Item __instance, ref string __state)
         {
-            //TasksItemSlot[] TasksItemSlotList = (TasksItemSlot[])Traverse.Create(__instance).Field("TasksItemSlotList").GetValue();
-            //foreach (TasksItemSlot tasksItemSlot in TasksItemSlotList)
-            //{
-            //    Debug.LogFormat("任务: {0}, {1}", tasksItemSlot.GetItemType(), tasksItemSlot.GetItemId());
-            //    if (tasksItemSlot.transform.childCount != 0)
-            //    {
-            //        UnityEngine.Object.Destroy(tasksItemSlot.transform.GetChild(0).gameObject);
-            //    }
-            //}
-            //Debug.LogFormat("点击完成任务！！！！！！！！！");
+            __instance.Name = __state;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Gongfa), "GetToolTipText", new Type[] { })]
+        public static bool Gongfa_GetToolTipText_prefix(ref Gongfa __instance, ref string __state, ref string __result)
+        {
+            __state = __instance.Name;
+            __instance.Name = get_color_item_name(__instance.Name, __instance.quality);
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Gongfa), "GetToolTipText", new Type[] { })]
+        public static void Gongfa_GetToolTipText_postfix(ref Gongfa __instance, ref string __state)
+        {
+            __instance.Name = __state;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(NeiGong), "GetToolTipText", new Type[] { })]
+        public static bool NeiGong_GetToolTipText_prefix(ref NeiGong __instance, ref string __state, ref string __result)
+        {
+            __state = __instance.Name;
+            __instance.Name = get_color_item_name(__instance.Name, __instance.quality);
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(NeiGong), "GetToolTipText", new Type[] { })]
+        public static void NeiGong_GetToolTipText_postfix(ref NeiGong __instance, ref string __state)
+        {
+            __instance.Name = __state;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(WaiGong), "GetToolTipText", new Type[] { })]
+        public static bool WaiGong_GetToolTipText_prefix(ref WaiGong __instance, ref string __state, ref string __result)
+        {
+            __state = __instance.Name;
+            __instance.Name = get_color_item_name(__instance.Name, __instance.quality);
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(WaiGong), "GetToolTipText", new Type[] { })]
+        public static void ShenFa_GetToolTipText_postfix(ref WaiGong __instance, ref string __state)
+        {
+            __instance.Name = __state;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShenFa), "GetToolTipText", new Type[] { })]
+        public static bool ShenFa_GetToolTipText_prefix(ref ShenFa __instance, ref string __state, ref string __result)
+        {
+            __state = __instance.Name;
+            __instance.Name = get_color_item_name(__instance.Name, __instance.quality);
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ShenFa), "GetToolTipText", new Type[] { })]
+        public static void ShenFa_GetToolTipText_postfix(ref ShenFa __instance, ref string __state)
+        {
+            __instance.Name = __state;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Plant_material), "GetToolTipText", new Type[] { })]
+        public static bool Plant_material_GetToolTipText_prefix(ref Plant_material __instance, ref string __state, ref string __result)
+        {
+            __state = __instance.Name;
+            __instance.Name = get_color_item_name(__instance.Name, __instance.quality);
+            return true;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Plant_material), "GetToolTipText", new Type[] { })]
+        public static void Plant_material_GetToolTipText_postfix(ref Plant_material __instance, ref string __state)
+        {
+            __instance.Name = __state;
+        }
+
+        public static string get_color_item_name(string Name, Item.Quality quality) 
+        {
+            string text2 = "<color=#FFFFFF>";
+            switch (quality)
+            {
+                case Item.Quality.下:
+                    text2 = "<color=#D3D938>";
+                    break;
+                case Item.Quality.中:
+                    text2 = "<color=#38D946>";
+                    break;
+                case Item.Quality.上:
+                    text2 = "<color=#FF4840>";
+                    break;
+                case Item.Quality.极:
+                    text2 = "<color=#FFB243>";
+                    break;
+                case Item.Quality.粗品:
+                    text2 = "<color=#D3D938>";
+                    break;
+                case Item.Quality.凡品:
+                    text2 = "<color=#38D946>";
+                    break;
+                case Item.Quality.精品:
+                    text2 = "<color=#63F0FF>";
+                    break;
+                case Item.Quality.绝品:
+                    text2 = "<color=#FF4840>";
+                    break;
+                case Item.Quality.神品:
+                    text2 = "<color=#FFB243>";
+                    break;
+                case Item.Quality.防身之术:
+                    text2 = "<color=#D3D938>";
+                    break;
+                case Item.Quality.寻常武艺:
+                    text2 = "<color=#38D946>";
+                    break;
+                case Item.Quality.一流功夫:
+                    text2 = "<color=#63F0FF>";
+                    break;
+                case Item.Quality.高深武学:
+                    text2 = "<color=#FF4840>";
+                    break;
+                case Item.Quality.盖世神功:
+                    text2 = "<color=#FFB243>";
+                    break;
+            }
+            Name = text2 + Name + "</color>";
+            return Name;
         }
     }
 }
