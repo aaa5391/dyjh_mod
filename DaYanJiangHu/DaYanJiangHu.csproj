@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\BepInEx\plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -58,15 +58,10 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-<<<<<<< HEAD
-      <HintPath>..\..\..\..\..\Game\steam\steamapps\common\大衍江湖\BepInEx\lib\UnityEngine.dll</HintPath>
+      <HintPath>..\..\EvolutionOfJiangHu_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>..\..\..\..\..\Game\steam\steamapps\common\大衍江湖\EvolutionOfJiangHu_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
-=======
-      <HintPath>..\..\EvolutionOfJiangHu_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
->>>>>>> 6f524315620e9a6b537f3fc1e790b86d2a09874b
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>..\..\EvolutionOfJiangHu_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
@@ -103,14 +98,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< HEAD
     <EmbeddedResource Include="skill_04_" />
-=======
-    <EmbeddedResource Include="starmaptools" />
->>>>>>> 6f524315620e9a6b537f3fc1e790b86d2a09874b
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="tanchuang_c" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="title_bg_c" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

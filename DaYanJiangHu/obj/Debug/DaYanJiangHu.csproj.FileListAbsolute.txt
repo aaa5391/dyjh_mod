@@ -8,3 +8,9 @@ F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\bin\Debug\Da
 F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.csproj.CoreCompileInputs.cache
 F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.dll
 F:\SteamLibrary\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.pdb
+D:\Game\steam\steamapps\common\大衍江湖\BepInEx\plugins\DaYanJiangHu.dll
+D:\Game\steam\steamapps\common\大衍江湖\BepInEx\plugins\DaYanJiangHu.pdb
+D:\Game\steam\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.csproj.CoreCompileInputs.cache
+D:\Game\steam\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.csproj.CopyComplete
+D:\Game\steam\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.dll
+D:\Game\steam\steamapps\common\大衍江湖\dyjh_mod\DaYanJiangHu\obj\Debug\DaYanJiangHu.pdb

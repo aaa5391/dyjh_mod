@@ -246,15 +246,32 @@ namespace DaYanJiangHu
             if (GUILayout.Button("修改门派名字"))
             {
                 modPlayerFactionFlag = true;
-                var ab = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("DaYanJiangHu.tanchuang_c")); 
-                Debug.LogFormat("0 --- {0}", OpenUi._instance._faction);
-                Debug.LogFormat("0 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(0).name);
-                Debug.LogFormat("1 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(1).childCount);
-                Debug.LogFormat("{0}", OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite.name);
+                var ab = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("DaYanJiangHu.title_bg_c")); 
+                Debug.LogFormat("0 --- {0}", OpenUi._instance.FactionNamePanel);
+                Debug.LogFormat("0 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(0));
+                Debug.LogFormat("0 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(0).GetComponent<Image>().sprite.name);
+                Debug.LogFormat("1 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(1));
+                Debug.LogFormat("1 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite.name);
                 Debug.LogFormat("2 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(2).childCount);
-                Debug.LogFormat("{0}", OpenUi._instance.FactionNamePanel.transform.GetChild(2).GetChild(0).GetComponent< Text>().text);
-                Debug.LogFormat("{0}", OpenUi._instance.FactionNamePanel.transform.GetChild(3).childCount);
-                OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite = ab.LoadAsset<Sprite>("tanchuang_bg");
+                Debug.LogFormat("2 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(2).GetChild(0).GetComponent<Text>().text);
+                Debug.LogFormat("3 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(3).childCount);
+                //OpenUi._instance.FactionNamePanel.transform.GetChild(0).GetComponent<Image>().sprite = null;
+                //UnityEngine.Object.Destroy(OpenUi._instance.FactionNamePanel.transform.GetChild(1).gameObject);
+                //UnityEngine.Object.Destroy(OpenUi._instance.FactionNamePanel.transform.GetChild(1).gameObject.GetComponent<Image>());
+                //Component[] componments2 = OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponents<Component>();
+                //Debug.LogFormat("组件数量: {0}", componments2.Length);
+                //UnityEngine.Object.Destroy(componments2[2]);
+                //foreach (Component component_test in componments2)
+                //{
+                //    Debug.LogFormat("childCount{0}", component_test.transform.childCount);
+                //    Debug.LogFormat("组件Type: {0}", component_test.GetType());
+                //}
+                //UnityEngine.Object.Destroy();
+                //OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite = ab.LoadAsset<Sprite>("title_bg_c");
+                //OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite = ab.LoadAsset<Sprite>("title_bg");
+                OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite = ab.LoadAsset<Sprite>("title_bg_c");
+                OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().enabled = true;
+                OpenUi._instance.FactionNamePanel.transform.GetChild(1).gameObject.AddComponent<Image>();
                 OpenUi._instance.FactionNamePanel.SetActive(true);
             }
         }
