@@ -18,7 +18,7 @@ namespace DaYanJiangHu
 {
     [BepInPlugin(GUID, NAME, VERSION)]
     [BepInProcess(GAME_PROCESS)]//*
-    public class Plugin : BaseUnityPlugin
+    public class DaYanJiangHu : BaseUnityPlugin
     {
         public const string GUID = "com.zhangsan.dygh.datingmod";
         public const string NAME = "DaTingMod";
@@ -31,6 +31,7 @@ namespace DaYanJiangHu
         private static bool biguan_flag = true;
         private static bool tili_flag = true;
         private static bool shen_gong_flag = true;
+        private static bool modPlayerFactionFlag = false;
 
         private static int x_resolution = 1920;
         private static int y_resolution = 1080;
@@ -69,7 +70,7 @@ namespace DaYanJiangHu
         [Obsolete]
         void Start()
         {
-            Harmony.CreateAndPatchAll(typeof(Plugin));
+            Harmony.CreateAndPatchAll(typeof(DaYanJiangHu));
             // 允许用户自定义启动快捷键
             ShowCounter = Config.AddSetting("打开窗口快捷键", "Key", new BepInEx.Configuration.KeyboardShortcut(KeyCode.F9));
             //save_items_to_local();
@@ -142,10 +143,7 @@ namespace DaYanJiangHu
             //modify_dating_people();
             //modify_warehouse_capacity();
             //modify_money();
-            foreach (TasksItemSlot tasksItemSlot in base.GetComponentsInChildren<TasksItemSlot>())
-            {
-                Debug.LogFormat("有任务可销毁");
-            }
+         
             // 监听脚本按键按下
             if (ShowCounter.Value.IsDown())
             {
@@ -233,10 +231,56 @@ namespace DaYanJiangHu
                 //获取内功
                 gen_neigong();
                 GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+                //修改门派名字
+                modifyPlayerFaction();
+                GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
             //定义窗体可以活动的范围
             GUI.DragWindow(new Rect(0, 0, UnityEngine.Screen.width, UnityEngine.Screen.height));
+        }
+
+        private void modifyPlayerFaction()
+        {
+            if (GUILayout.Button("修改门派名字"))
+            {
+                modPlayerFactionFlag = true;
+                var ab = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("DaYanJiangHu.tanchuang_c")); 
+                Debug.LogFormat("0 --- {0}", OpenUi._instance._faction);
+                Debug.LogFormat("0 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(0).name);
+                Debug.LogFormat("1 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(1).childCount);
+                Debug.LogFormat("{0}", OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite.name);
+                Debug.LogFormat("2 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(2).childCount);
+                Debug.LogFormat("{0}", OpenUi._instance.FactionNamePanel.transform.GetChild(2).GetChild(0).GetComponent< Text>().text);
+                Debug.LogFormat("{0}", OpenUi._instance.FactionNamePanel.transform.GetChild(3).childCount);
+                OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite = ab.LoadAsset<Sprite>("tanchuang_bg");
+                OpenUi._instance.FactionNamePanel.SetActive(true);
+            }
+        }
+
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(OpenUi), "SetFactionName", new Type[] { })]
+        public static bool Gongfa_SetFactionName_postfix(ref OpenUi __instance)
+        {
+            if (modPlayerFactionFlag)
+            {
+                SoundEffectManager._instance.ClickButton();
+                if (__instance.FactionNamePanel.transform.GetChild(2).GetChild(1).GetComponent<Text>().text == "")
+                {
+                    __instance.systemobjet.GetComponent<SaveManager>().ShowRemind("请输入门派名字");
+                    return false;
+                }
+                __instance.systemobjet.GetComponent<SaveManager>().ShowRemind("<color=#00FF07>门派已修改</color>");
+                __instance.Gamedatas.PlayerFaction = __instance.FactionNamePanel.transform.GetChild(2).GetChild(1).GetComponent<Text>().text;
+                __instance.FactionNamePanel.SetActive(false);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         private void gen_neigong()
@@ -436,13 +480,13 @@ namespace DaYanJiangHu
             {
                 FileStream fileStream = new FileStream(infoPath, FileMode.CreateNew);
                 StreamWriter streamWriter = new StreamWriter(fileStream, System.Text.Encoding.UTF8);
-                streamWriter.WriteLine("ID 名称 级别 类型 值 功能1 功能2 功能3");
+                streamWriter.WriteLine("ID 名称 级别 类型 值 功能1 功能2 功能3 五行属性1 五行属性2");
                 if (items != null)
                 {
                     foreach (Item item in items)
                     {
                         Debug.LogFormat("物品ID: {0}, 物品名称: {1}, 物品等级: {2}", item.ID, item.Name, item.quality);
-                        streamWriter.WriteLine(Convert.ToString(item.ID) + " " + item.Name + " " + item.quality + " " + item.itemType + " " + item.Value + " " + item.Skills_0 + " " + item.Skills_1 + " " + item.Skills_2);
+                        streamWriter.WriteLine(Convert.ToString(item.ID) + " " + item.Name + " " + item.quality + " " + item.itemType + " " + item.Value + " " + item.Skills_0 + " " + item.Skills_1 + " " + item.Skills_2 + " " + item.Elements_0.ToString() + " " + item.Elements_1.ToString());
                     }
                 }
                 streamWriter.Close(); //此处有坑。。。。要注意安全
@@ -856,7 +900,8 @@ namespace DaYanJiangHu
             roles.ContributionNum -= 100f;
             roles.TrainSkill = __instance.transform.GetChild(0).GetComponent<ItemsUi>().Item;
             roles.TrainTime = 1;
-            roles.TrainProbability = (float)Traverse.Create(__instance).Field("Probability").GetValue();
+            //roles.TrainProbability = (float)Traverse.Create(__instance).Field("Probability").GetValue();
+            roles.TrainSpeed = (float)Traverse.Create(__instance).Field("trainSpeed").GetValue();
             roles.rolestate = Roles.RoleState.传授功法;
             OpenUi._instance.Gamedatas.MasterRoles.rolestate = Roles.RoleState.培养;
             OpenUi._instance.Gamedatas.MasterRoles.TrainTime = 1;

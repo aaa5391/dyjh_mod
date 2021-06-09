@@ -63,6 +63,7 @@
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>..\..\EvolutionOfJiangHu_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\EvolutionOfJiangHu_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
@@ -82,9 +83,11 @@
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule">
       <HintPath>..\..\EvolutionOfJiangHu_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
       <HintPath>..\..\EvolutionOfJiangHu_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +97,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="starmaptools" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="tanchuang_c" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
