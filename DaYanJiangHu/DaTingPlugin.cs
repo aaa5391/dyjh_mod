@@ -256,6 +256,7 @@ namespace DaYanJiangHu
                 Debug.LogFormat("2 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(2).GetChild(0).GetComponent<Text>().text);
                 Debug.LogFormat("3 --- {0}", OpenUi._instance.FactionNamePanel.transform.GetChild(3).childCount);
                 //OpenUi._instance.FactionNamePanel.transform.GetChild(0).GetComponent<Image>().sprite = null;
+                RectTransform rectTf = OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<RectTransform>();
                 //UnityEngine.Object.Destroy(OpenUi._instance.FactionNamePanel.transform.GetChild(1).gameObject);
                 //UnityEngine.Object.Destroy(OpenUi._instance.FactionNamePanel.transform.GetChild(1).gameObject.GetComponent<Image>());
                 //Component[] componments2 = OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponents<Component>();
@@ -270,8 +271,10 @@ namespace DaYanJiangHu
                 //OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite = ab.LoadAsset<Sprite>("title_bg_c");
                 //OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite = ab.LoadAsset<Sprite>("title_bg");
                 OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().sprite = ab.LoadAsset<Sprite>("title_bg_c");
-                OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().enabled = true;
-                OpenUi._instance.FactionNamePanel.transform.GetChild(1).gameObject.AddComponent<Image>();
+                //OpenUi._instance.FactionNamePanel.transform.GetChild(1).GetComponent<Image>().enabled = true;
+                //OpenUi._instance.FactionNamePanel.transform.GetChild(1).gameObject.AddComponent<RectTransform>();
+                //OpenUi._instance.FactionNamePanel.transform.GetChild(1).gameObject.AddComponent<CanvasRenderer>();
+                //OpenUi._instance.FactionNamePanel.transform.GetChild(1).gameObject.AddComponent<Image>();
                 OpenUi._instance.FactionNamePanel.SetActive(true);
             }
         }
